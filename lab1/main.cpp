@@ -3,27 +3,45 @@
 #endif 
 
 #include <windows.h>
+#include "module1.h"
+#include "module2.h"
 
 #define MENU_FILE    1
 #define MENU_WORK_1  2
 #define MENU_WORK_2  3
 #define MENU_ABOUT   4
 
+
+static wchar_t input_text[128] = L"NULL";
+static wchar_t list_text[128] = L"NULL";
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    PAINTSTRUCT ps;
+    HDC hdc;
     switch (msg) {
         case WM_COMMAND: {
             int wmId = LOWORD(wParam);
             switch (wmId) {
                 case MENU_WORK_1:
+                    module1_func(hwnd, input_text);
+                    InvalidateRect(hwnd, NULL, TRUE);
                     break;
                 case MENU_WORK_2:
+                    module2_func(hwnd, list_text);
+                    InvalidateRect(hwnd, NULL, TRUE);
                     break;
                 case MENU_ABOUT:
-                    MessageBox(hwnd, L"Win32 Menu Example v1.0", L"About", MB_OK | MB_ICONINFORMATION);
+                    MessageBox(hwnd, L"Very cool lab (pliz giv 6 ^^)", L"About", MB_OK | MB_ICONINFORMATION);
                     break;
             }
             break;
         }
+        case WM_PAINT:
+            hdc = BeginPaint(hwnd, &ps);
+            TextOut(hdc, 100, 100, input_text, 128);
+            TextOut(hdc, 100, 150, list_text, 128);
+            EndPaint(hwnd, &ps);
+            break;
         case WM_CLOSE:
             DestroyWindow(hwnd);
             break;

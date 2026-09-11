@@ -1,2 +1,2 @@
 main: 	main.cpp module1.cpp module2.cpp
-		g++ main.cpp -o main && .\main.exe -std=c++20
+		g++ -std=c++20 main.cpp module1.cpp module2.cpp -o main.exe -lgdi32 && .\main.exe
