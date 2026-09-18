@@ -1,0 +1,2 @@
+main: main.cpp .\shapes\dot.cpp .\shapes\elipse.cpp .\shapes\line.cpp .\shapes\rect.cpp create_win.cpp
+	  g++ -std=c++20 main.cpp .\shapes\dot.cpp .\shapes\elipse.cpp .\shapes\line.cpp .\shapes\rect.cpp create_win.cpp -o main.exe -lgdi32 && .\main.exe

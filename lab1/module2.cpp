@@ -11,7 +11,6 @@
 
 static INT_PTR CALLBACK ListDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
     wchar_t* buffer = (wchar_t*)GetWindowLongPtr(hDlg, DWLP_USER);
-
     switch (msg) {
         case WM_INITDIALOG: {
             buffer = (wchar_t*)lParam;

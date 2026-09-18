@@ -17,7 +17,7 @@ static INT_PTR CALLBACK Module1Proc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM l
             buf = (wchar_t*)lParam;
             SetWindowLongPtr(hDlg, DWLP_USER, (LONG_PTR)buf);
             // Create Input Box
-            CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", buf,
+            CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", NULL,
                 WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL,
                 20, 20, 240, 25, hDlg, (HMENU)TXT_INPUT, GetModuleHandle(NULL), NULL);
             // Accept Button
