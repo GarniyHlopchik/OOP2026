@@ -10,6 +10,7 @@ class Dot : public Shape{
         Dot(Vector2 position) : position(position){};
         ~Dot() override = default;
         void draw(HDC hdc) override;
+        void preview_draw(HDC hdc) override;
     private:
         Vector2 position;
 };

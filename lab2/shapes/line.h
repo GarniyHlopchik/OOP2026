@@ -10,6 +10,7 @@ class Line : public Shape{
         Line(Vector2 start, Vector2 end) : start(start), end(end){};
         ~Line() = default;
         void draw(HDC hdc) override;
+        void preview_draw(HDC hdc) override;
     private:
         Vector2 start;
         Vector2 end;

@@ -8,6 +8,7 @@ class Shape{
         Shape() = default;
         virtual ~Shape() = default;
         virtual void draw(HDC hdc) = 0;
+        virtual void preview_draw(HDC hdc) = 0;
 };
 
 #endif

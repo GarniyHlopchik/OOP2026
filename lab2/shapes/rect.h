@@ -13,6 +13,7 @@ class Rect : public Shape{
         Rect(Vector2 center, Vector2 delta) : center(center), delta(delta){};
         ~Rect() = default;
         void draw(HDC hdc) override;
+        void preview_draw(HDC hdc) override;
     private:
         Vector2 center;
         Vector2 delta;

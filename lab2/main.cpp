@@ -17,11 +17,18 @@
 
 Shape** ShapeArray;
 int arr_size = 0;
-
+HWND hModelessDlg = NULL;
+Shape* PreviewShape;
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     PAINTSTRUCT ps;
     HDC hdc;
     switch (msg) {
+        case WM_DIALOG_CLOSED: {
+            hModelessDlg = NULL; // Reset handle so a new dialogue can be created
+            PreviewShape = nullptr;
+            InvalidateRect(hwnd, NULL, TRUE);
+            return 0;
+        }
         case WM_COMMAND: {
             int wmId = LOWORD(wParam);
             switch (wmId) {
@@ -29,8 +36,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 case MENU_LINE:
                 case MENU_ELIPSE:
                 case MENU_RECT:
-                    create_shape(hwnd, wmId,ShapeArray,&arr_size);
-                    InvalidateRect(hwnd, NULL, TRUE);
+                    if(!hModelessDlg){
+                        hModelessDlg = create_shape(hwnd, wmId,ShapeArray,&arr_size);
+                        InvalidateRect(hwnd, NULL, TRUE);
+                    }
                     break;
                 case MENU_ABOUT:
                     MessageBox(hwnd, L"Друга лабораторна з ООП", L"About", MB_OK | MB_ICONINFORMATION);
@@ -44,6 +53,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             for(int i = 0; i<arr_size; i++){
                 ShapeArray[i]->draw(hdc);
             }
+            if(PreviewShape != nullptr){
+                PreviewShape->preview_draw(hdc);
+            }
+            
             EndPaint(hwnd, &ps);
             break;
         case WM_CLOSE:
@@ -59,8 +72,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     ShapeArray = new Shape*[103];
-    ShapeArray[0] = static_cast<Shape*>(new Elipse(Vector2{100,100},Vector2{300,200}));
-    arr_size+=1;
     //win class
     const wchar_t className[] = L"LAB2";
     WNDCLASS winClass{
@@ -104,12 +115,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         if(msgReturn == -1){
             break;
         }
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        if (hModelessDlg == NULL || !IsDialogMessage(hModelessDlg, &msg)) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
     }
     for (int i = 0; i < arr_size; i++) {
         delete ShapeArray[i];
     }
-    delete[] ShapeArray; // Use delete[] for dynamic arrays
+    delete[] ShapeArray; 
     return 0;
 }

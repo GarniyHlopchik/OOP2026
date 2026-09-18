@@ -8,10 +8,13 @@
 #define LINE   3
 #define RECT   4
 #define ELIPSE 5
+
+#define WM_DIALOG_CLOSED (WM_USER + 100)
+
 struct ArrData{
     Shape** array;
     int* size;
 };
-int create_shape(HWND hwnd, int shape, Shape** arr, int* size);
+HWND create_shape(HWND hwnd, int shape, Shape** arr, int* size);
 
 #endif

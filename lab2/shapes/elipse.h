@@ -12,6 +12,7 @@ class Elipse : public Shape{
         Elipse(Vector2 corner1, Vector2 corner2) : corner1(corner1), corner2(corner2){};
         ~Elipse() = default;
         void draw(HDC hdc) override;
+        void preview_draw(HDC hdc) override;
     private:
         Vector2 corner1;
         Vector2 corner2;
