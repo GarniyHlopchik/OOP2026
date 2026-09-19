@@ -13,6 +13,7 @@ class Elipse : public Shape{
         ~Elipse() = default;
         void draw(HDC hdc) override;
         void preview_draw(HDC hdc) override;
+        void set_second(Vector2 value) override;
     private:
         Vector2 corner1;
         Vector2 corner2;

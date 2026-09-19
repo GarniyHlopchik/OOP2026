@@ -16,5 +16,5 @@ struct ArrData{
     int* size;
 };
 HWND create_shape(HWND hwnd, int shape, Shape** arr, int* size);
-
+Shape* CreateShapeObject(Vector2 vec1, Vector2 vec2, int shape_id);
 #endif

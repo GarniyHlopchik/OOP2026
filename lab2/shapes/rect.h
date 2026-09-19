@@ -14,6 +14,7 @@ class Rect : public Shape{
         ~Rect() = default;
         void draw(HDC hdc) override;
         void preview_draw(HDC hdc) override;
+        void set_second(Vector2 value) override;
     private:
         Vector2 center;
         Vector2 delta;

@@ -26,3 +26,7 @@ void Elipse::preview_draw(HDC hdc){
     DeleteObject(hBlackPen);
     DeleteObject(hBlueBrush);
 }
+
+void Elipse::set_second(Vector2 value){
+    corner2 = value;
+}

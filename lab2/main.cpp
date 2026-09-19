@@ -3,6 +3,7 @@
 #endif 
 
 #include <windows.h>
+#include <windowsx.h> // Required for GET_X_LPARAM and GET_Y_LPARAM
 #include "shapes/shape.h"
 #include "shapes/elipse.h"
 #include "shapes/vec2.h"
@@ -19,6 +20,11 @@ Shape** ShapeArray;
 int arr_size = 0;
 HWND hModelessDlg = NULL;
 Shape* PreviewShape;
+bool creation_state = false;
+bool isDragging = false;
+int shape_id;
+Vector2 start_pos;
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     PAINTSTRUCT ps;
     HDC hdc;
@@ -37,7 +43,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 case MENU_ELIPSE:
                 case MENU_RECT:
                     if(!hModelessDlg){
-                        hModelessDlg = create_shape(hwnd, wmId,ShapeArray,&arr_size);
+                        //hModelessDlg = create_shape(hwnd, wmId,ShapeArray,&arr_size);
+                        creation_state = true;
+                        shape_id = wmId;
                         InvalidateRect(hwnd, NULL, TRUE);
                     }
                     break;
@@ -46,6 +54,54 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                     break;
             }
             break;
+        }
+        case WM_LBUTTONDOWN:{
+            int xPos = GET_X_LPARAM(lParam);
+            int yPos = GET_Y_LPARAM(lParam);
+            start_pos = Vector2{xPos,yPos};
+            PreviewShape = CreateShapeObject(Vector2{xPos,yPos},Vector2{xPos,yPos},shape_id);
+            isDragging = true;
+            SetCapture(hwnd);
+            InvalidateRect(hwnd, NULL, FALSE);
+            return 0;
+        }
+        case WM_MOUSEMOVE: {
+            // 2. TRACK: Only record movement if currently in a drag state
+            if (isDragging) {
+                Vector2 pos;
+                pos.x = GET_X_LPARAM(lParam);
+                pos.y = GET_Y_LPARAM(lParam);
+
+                PreviewShape->set_second(pos);
+
+                // Example: Trigger a window repaint to show a selection box or line
+                InvalidateRect(hwnd, NULL, FALSE);
+            }
+            return 0;
+        }
+        case WM_LBUTTONUP: {
+            // 3. FINISH: End tracking when button is released
+            if (isDragging) {
+                isDragging = false;
+                creation_state = false;
+                
+                // Always release capture when finished
+                ReleaseCapture();
+
+                // Final position when released
+                int endX = GET_X_LPARAM(lParam);
+                int endY = GET_Y_LPARAM(lParam);
+
+                delete PreviewShape;
+                PreviewShape = nullptr;
+
+                ShapeArray[arr_size] = CreateShapeObject(start_pos,Vector2{endX,endY},shape_id);
+                arr_size+=1;
+                // Perform final action (e.g., commit selection, drop object)
+
+                InvalidateRect(hwnd, NULL, FALSE);
+            }
+            return 0;
         }
         case WM_PAINT:
             hdc = BeginPaint(hwnd, &ps);

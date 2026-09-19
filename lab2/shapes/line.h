@@ -11,6 +11,7 @@ class Line : public Shape{
         ~Line() = default;
         void draw(HDC hdc) override;
         void preview_draw(HDC hdc) override;
+        void set_second(Vector2 value) override;
     private:
         Vector2 start;
         Vector2 end;

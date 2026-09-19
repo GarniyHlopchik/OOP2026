@@ -22,3 +22,7 @@ void Rect::preview_draw(HDC hdc){
     DeleteObject(hBlackPen);
 
 }
+
+void Rect::set_second(Vector2 value){
+    delta=value;
+}

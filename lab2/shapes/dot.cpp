@@ -8,3 +8,4 @@ void Dot::draw(HDC hdc){
 void Dot::preview_draw(HDC hdc){
     SetPixel(hdc, position.x, position.y, RGB(255, 255, 255));
 }
+void Dot::set_second(Vector2 value){}
