@@ -62,7 +62,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
             PreviewShape = CreateShapeObject(Vector2{xPos,yPos},Vector2{xPos,yPos},shape_id);
             isDragging = true;
             SetCapture(hwnd);
-            InvalidateRect(hwnd, NULL, FALSE);
+            InvalidateRect(hwnd, NULL, TRUE);
             return 0;
         }
         case WM_MOUSEMOVE: {
@@ -75,7 +75,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 PreviewShape->set_second(pos);
 
                 // Example: Trigger a window repaint to show a selection box or line
-                InvalidateRect(hwnd, NULL, FALSE);
+                InvalidateRect(hwnd, NULL, TRUE);
             }
             return 0;
         }
@@ -99,7 +99,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                 arr_size+=1;
                 // Perform final action (e.g., commit selection, drop object)
 
-                InvalidateRect(hwnd, NULL, FALSE);
+                InvalidateRect(hwnd, NULL, TRUE);
             }
             return 0;
         }
