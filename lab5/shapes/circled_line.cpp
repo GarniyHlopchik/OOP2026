@@ -12,6 +12,8 @@ void CircledLine::draw(HDC hdc){
 }
 
 void CircledLine::preview_draw(HDC hdc){
+    Elipse::is_selected = is_selected;
+    Line::is_selected = is_selected;
     HBRUSH hBlueBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
     HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, hBlueBrush);
     HPEN hBlackPen = CreatePen(PS_DASH, 1, RGB(0, 0, 0));

@@ -88,6 +88,24 @@ void DialogueWindow::OnClosed() {
     // За замовчуванням порожньо
 }
 
+
+void DialogueWindow::RebuildControls() {
+    if (!IsOpen()) return;
+
+    SendMessageW(m_hwnd, WM_SETREDRAW, FALSE, 0);     // no flicker while rebuilding
+
+    // Destroy every direct child; their own children go with them
+    while (HWND child = GetWindow(m_hwnd, GW_CHILD)) {
+        DestroyWindow(child);
+    }
+
+    OnCreateControls();
+
+    SendMessageW(m_hwnd, WM_SETREDRAW, TRUE, 0);
+    RedrawWindow(m_hwnd, nullptr, nullptr,
+                 RDW_ERASE | RDW_INVALIDATE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+}
+
 HWND DialogueWindow::AddControl(PCWSTR className, PCWSTR text, DWORD style,
                                 int x, int y, int width, int height, int id)
 {

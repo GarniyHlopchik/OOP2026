@@ -7,6 +7,7 @@
 
 class DialogueWindow : public Window {
 public:
+    void RebuildControls();
     DialogueWindow();
     ~DialogueWindow() override;
  

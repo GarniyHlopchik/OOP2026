@@ -15,6 +15,7 @@ class Shape{
         virtual void set_second(Vector2 value) = 0;
         virtual std::pair<Vector2, Vector2> get_data() = 0;
         virtual PCWSTR name() const = 0;
+        bool is_selected = false;
 };
 
 #endif

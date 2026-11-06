@@ -2,6 +2,19 @@
 #include "line.h"
 
 void Line::draw(HDC hdc){
+    if(is_selected){
+        HBRUSH hNullBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+        HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, hNullBrush);
+        HPEN hBluePen = CreatePen(PS_SOLID, 1, RGB(0, 20, 255));
+        HPEN hOldPen = (HPEN)SelectObject(hdc, hBluePen);
+        MoveToEx(hdc, start.x, start.y, NULL);          // Set starting point
+        LineTo(hdc, end.x, end.y); 
+        SelectObject(hdc, hOldBrush);
+        SelectObject(hdc, hOldPen);
+        DeleteObject(hNullBrush);
+        DeleteObject(hBluePen);
+        return;
+    }
     MoveToEx(hdc, start.x, start.y, NULL);          // Set starting point
     LineTo(hdc, end.x, end.y);                  // Draw line to
 }

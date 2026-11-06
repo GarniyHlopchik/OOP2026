@@ -37,6 +37,10 @@ public:
                 int width = CW_USEDEFAULT, int height = CW_USEDEFAULT,
                 HWND parent = nullptr, HMENU menu = nullptr) override;
 
+    void DeleteShape(int index);
+    void SelectShape(int index);
+    void UnselectAll();
+
     static PaintWindow& getInstance();
  
 protected:

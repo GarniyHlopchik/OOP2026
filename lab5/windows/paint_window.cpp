@@ -128,15 +128,104 @@ PaintWindow::~PaintWindow() {
     }
 }
 
+bool ParseCSV(std::vector<FileElement>& result, std::wstring& text){
+    std::wstring buffer;
+                        FileElement el;
+                        int filled = 0;
+
+                        
+                        for(auto c : text){
+                            if(c == ','){
+                                switch (filled)
+                                {
+                                case 0:
+                                    el.name = buffer;
+                                    break;
+                                case 1:
+                                    el.x1 = stoi(buffer);
+                                    break;
+                                case 2:
+                                    el.y1 = stoi(buffer);
+                                    break;
+                                case 3:
+                                    el.x2 = stoi(buffer);
+                                    break;
+                                case 4:
+                                    el.y2 = stoi(buffer);
+                                    break;
+                                default:
+                                    break;
+                                }
+                                filled+=1;
+                                buffer = L"";
+                            }else if(c == '\r'){}
+                            else if(c == '\n'){
+                                result.push_back(el);
+                                filled = 0;
+                            }
+                            else{
+                                buffer += c;
+                            }
+                        }
+                        
+}
+
 PaintWindow& PaintWindow::getInstance() {
     static PaintWindow instance;
     return instance;
+}
+
+void PaintWindow::DeleteShape(int id){
+    //drag everything down 1
+    for(int i = id; i < amount; i++){
+        if(i+1 < amount){
+            shapes[i] = shapes[i+1];
+        }
+    }
+    amount-=1;
+    InvalidateRect(m_hwnd,NULL,TRUE);
+}
+void PaintWindow::SelectShape(int id){
+    for (size_t i = 0; i < amount; i++)
+    {
+        if(i==id){
+            shapes[i]->is_selected = true;
+        }
+        else{
+            shapes[i]->is_selected = false;
+        }
+    }
+    InvalidateRect(m_hwnd,NULL,TRUE);
+    
+}
+void PaintWindow::UnselectAll(){
+    for(int i = 0; i < amount; i++){
+        shapes[i]->is_selected = false;
+    }
+    InvalidateRect(m_hwnd,NULL,TRUE);
+}
+
+void on_table_select(int row){
+    PaintWindow& win = PaintWindow::getInstance();
+    win.SelectShape(row);
+}
+
+void on_table_delete(int row){
+    PaintWindow& win = PaintWindow::getInstance();
+    win.DeleteShape(row);
+
+}
+void on_table_close(){
+    std::cout << "Callback close!" << std::endl;
+    PaintWindow& win = PaintWindow::getInstance();
+    win.UnselectAll();
 }
 
 bool PaintWindow::Create(PCWSTR title, DWORD style, DWORD exStyle,
                          int x, int y, int width, int height,
                          HWND parent, HMENU menu)
 {
+    table.SetupCallbacks(on_table_select,on_table_delete, on_table_close);
     //load icons
     icons[0] = LoadIconFromFile(L".\\icons\\ellipse.bmp", 64, 64);
     icons[1] = LoadIconFromFile(L".\\icons\\ellipse.bmp", 64, 64);
@@ -336,42 +425,7 @@ LRESULT PaintWindow::OnCommand(int id, int eventCode, HWND controlHandle) {
                     if(result){
                         std::wstring file_contents = BytesToWString(bytes);
                         std::vector<FileElement> data_rows;
-                        std::wstring buffer;
-                        FileElement el;
-                        int filled = 0;
-                        for(auto c : file_contents){
-                            if(c == ','){
-                                switch (filled)
-                                {
-                                case 0:
-                                    el.name = buffer;
-                                    break;
-                                case 1:
-                                    el.x1 = stoi(buffer);
-                                    break;
-                                case 2:
-                                    el.y1 = stoi(buffer);
-                                    break;
-                                case 3:
-                                    el.x2 = stoi(buffer);
-                                    break;
-                                case 4:
-                                    el.y2 = stoi(buffer);
-                                    break;
-                                default:
-                                    break;
-                                }
-                                filled+=1;
-                                buffer = L"";
-                            }else if(c == '\r'){}
-                            else if(c == '\n'){
-                                data_rows.push_back(el);
-                                filled = 0;
-                            }
-                            else{
-                                buffer += c;
-                            }
-                        }
+                        ParseCSV(data_rows, file_contents);
                         amount = 0;
                         for(auto el : data_rows){
                             if(el.name == L"Прямокутник"){
@@ -474,7 +528,11 @@ LRESULT PaintWindow::HandleMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
                 // Perform final action (e.g., commit selection, drop object)
  
                 InvalidateRect(m_hwnd, NULL, TRUE);
-            }
+
+                table.SetData(shapes, amount);
+                if(table.IsOpen()){
+                table.RebuildControls();       
+            }   }
             return 0;
         }
     }

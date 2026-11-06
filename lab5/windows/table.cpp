@@ -1,12 +1,14 @@
 #include "table.h"
 #include <string>
 
+#define IDC_TABLE 200
+
 void Table::OnCreateControls() {
     INITCOMMONCONTROLSEX icex = { sizeof(icex), ICC_LISTVIEW_CLASSES };
     InitCommonControlsEx(&icex);
 
     HWND lv = AddControl(WC_LISTVIEWW, L"", LVS_REPORT | LVS_SINGLESEL | WS_BORDER | WS_TABSTOP,
-                         10, 10, 500, 200, 200);
+                         10, 10, 500, 200, IDC_TABLE);
     ListView_SetExtendedListViewStyle(lv, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
     // Columns
@@ -18,7 +20,7 @@ void Table::OnCreateControls() {
     col.cx = 80;  col.pszText = (LPWSTR)L"X2";       ListView_InsertColumn(lv, 3, &col);
     col.cx = 80;  col.pszText = (LPWSTR)L"Y2";       ListView_InsertColumn(lv, 4, &col);
 
-    for(int i = 0; i < m_size; i++){
+    for(int i = m_size-1; i >= 0; i--){
         // A row
         LVITEMW item = {};
         item.mask = LVIF_TEXT;
@@ -39,11 +41,49 @@ void Table::OnCreateControls() {
 }
 
 LRESULT Table::OnCommand(int id, int code, HWND h){
-    if (id == IDOK) { /* apply settings */ Close(); return 0; }
+    if (id == IDOK) {
+        if(m_on_close){
+            m_on_close();
+        }
+        Close();
+        return 0; 
+    }
     return DialogueWindow::OnCommand(id, code, h);
 }
 
 void Table::SetData(Shape** arr, int size){
     m_arr = arr;
     m_size = size;
+}
+
+LRESULT Table::HandleMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
+    switch(msg){
+        case WM_NOTIFY:{
+            LPNMHDR pnmh = (LPNMHDR)lParam;
+            if (pnmh->idFrom == IDC_TABLE){
+                if (pnmh->code == NM_CLICK){
+                    LPNMITEMACTIVATE pnmItem = (LPNMITEMACTIVATE)lParam;
+                    int rowIndex = pnmItem->iItem;     // Row index (-1 if clicked on empty space)
+                    
+
+                    if (rowIndex != -1){
+                        m_on_select(rowIndex);
+                    }
+                }
+                else if (pnmh->code == NM_RCLICK){
+                LPNMITEMACTIVATE pnmItem = (LPNMITEMACTIVATE)lParam;
+                int rowIndex = pnmItem->iItem;
+
+                if (rowIndex != -1)
+                {
+                    m_size-=1;
+                    m_on_delete(rowIndex);
+                    RebuildControls();
+                }
+            }
+            }
+            
+        }
+    }
+    return DialogueWindow::HandleMessage(msg, wParam, lParam);
 }

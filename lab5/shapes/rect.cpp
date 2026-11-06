@@ -2,6 +2,18 @@
 #include "rect.h"
 
 void Rect::draw(HDC hdc){
+    if(is_selected){
+        HBRUSH hNullBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+        HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, hNullBrush);
+        HPEN hBluePen = CreatePen(PS_SOLID, 1, RGB(0, 20, 255));
+        HPEN hOldPen = (HPEN)SelectObject(hdc, hBluePen);
+        Rectangle(hdc, center.x,center.y,center.x+delta.x,center.y+delta.y);
+        SelectObject(hdc, hOldBrush);
+        SelectObject(hdc, hOldPen);
+        DeleteObject(hNullBrush);
+        DeleteObject(hBluePen);
+        return;
+    }
     HBRUSH hNullBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
     HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, hNullBrush);
     Rectangle(hdc, center.x,center.y,center.x+delta.x,center.y+delta.y);

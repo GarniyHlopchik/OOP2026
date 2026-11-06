@@ -3,6 +3,8 @@
 #include "cube.h"
 
 void Cube::draw(HDC hdc){
+    Rect::is_selected = is_selected;
+    Line::is_selected = is_selected;
     // 1. Save original bounding box coordinates (corner and offset)
     Vector2 cache_start = Rect::center; 
     Vector2 cache_end = Rect::delta;    
